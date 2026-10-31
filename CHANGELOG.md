@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-31
+
+### Added
+- Laravel 11 support (Laravel 11, 12 and 13 on PHP 8.2+).
+
 ## [1.0.0] - 2026-10-31
 
 ### Added
@@ -15,5 +20,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `MailerDriver` contract for adding new providers.
 - Support for Laravel 12 and 13 on PHP 8.2+.
 
-[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lmottasin/laravel-http-mailer/releases/tag/v1.0.0
