@@ -12,9 +12,9 @@
 
 # Laravel HTTP Mailer
 
-- 🔒 **Problem:** cloud hosts block SMTP ports (25, 465, 587) for security, so Laravel emails time out.
-- ✅ **Fix:** send through the **SendGrid** or **Brevo** API over HTTPS (port 443).
-- ✨ **No changes to your email code.** Mailables, Notifications and `Mail::` keep working. Just one line in `.env`.
+- <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/lock.svg" width="16" height="16" alt=""> **Problem:** cloud hosts block SMTP ports (25, 465, 587) for security, so Laravel emails time out.
+- <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/arrow.svg" width="16" height="16" alt=""> **Fix:** send through the **SendGrid** or **Brevo** API over HTTPS (port 443).
+- <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/code.svg" width="16" height="16" alt=""> **No changes to your email code.** Mailables, Notifications and `Mail::` keep working. Just one line in `.env`.
 
 ## Why
 
@@ -252,7 +252,7 @@ class FooDriver implements MailerDriver
 protected array $drivers = [
     SendGridDriver::class,
     BrevoDriver::class,
-    FooDriver::class,   // 👈 add this
+    FooDriver::class,   // add this line
 ];
 ```
 
@@ -286,10 +286,10 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 
 | Package | Works with `Mail::` | SendGrid + Brevo | No glue code |
 |---|:-:|:-:|:-:|
-| **lmottasin/laravel-http-mailer** | ✅ | ✅ | ✅ |
-| `symfony/*-mailer` bridges | ❌ | ❌ | ❌ |
-| `s-ichikawa/laravel-sendgrid-driver` | ✅ | ❌ | ✅ |
-| `sendgrid/sendgrid` (SDK) | ❌ | ❌ | ❌ |
+| **lmottasin/laravel-http-mailer** | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> |
+| `symfony/*-mailer` bridges | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
+| `s-ichikawa/laravel-sendgrid-driver` | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> |
+| `sendgrid/sendgrid` (SDK) | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
 
 </details>
 
