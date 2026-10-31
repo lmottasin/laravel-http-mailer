@@ -213,6 +213,9 @@ Then set `MAIL_MAILER=api` in `.env`, along with both API keys.
 ],
 ```
 
+> [!NOTE]
+> If your `config/services.php` already has a `sendgrid` or `brevo` block, the package leaves it as it is. Add `'region' => env('SENDGRID_REGION')` to it yourself if you need the EU region.
+
 **Per-mailer settings.** The package adds `sendgrid` and `brevo` to `mail.mailers` for you. If you define them yourself in `config/mail.php`, yours wins:
 
 ```php

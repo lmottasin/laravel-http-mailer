@@ -61,10 +61,21 @@ final class HttpMailerServiceProviderTest extends TestCase
         $this->assertSame(['transport' => 'brevo'], config('mail.mailers.brevo'));
     }
 
-    public function test_merges_default_service_credentials_without_overriding_the_app(): void
+    public function test_adds_default_service_entries_when_the_app_has_none(): void
     {
-        $this->assertSame('SG.test-key', config('services.sendgrid.key'));
         $this->assertTrue(config()->has('services.sendgrid.region'));
+        $this->assertTrue(config()->has('services.brevo.key'));
+    }
+
+    public function test_keeps_a_services_block_the_app_already_defines(): void
+    {
+        config()->set('services.sendgrid', ['key' => 'SG.app-key']);
+
+        $this->registerProviderAgain();
+
+        // Laravel merges package config one level deep: the app's block wins as a whole.
+        $this->assertSame(['key' => 'SG.app-key'], config('services.sendgrid'));
+        $this->assertNull(config('services.sendgrid.region'));
     }
 
     public function test_keeps_a_mailer_the_app_already_defines(): void
