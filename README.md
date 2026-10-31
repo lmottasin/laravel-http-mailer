@@ -314,6 +314,23 @@ That's it: `MAIL_MAILER=foo` now works. Names must be unique, can't contain a do
 
 </details>
 
+## Related links
+
+**Why your host blocks SMTP**
+- [DigitalOcean: Why is SMTP blocked?](https://docs.digitalocean.com/support/why-is-smtp-blocked/): ports 25, 465 and 587 are blocked on all Droplets by default.
+- [AWS: Remove the port 25 restriction on EC2](https://repost.aws/knowledge-center/ec2-port-25-throttle): outbound port 25 is throttled until AWS approves a request.
+- [Google Cloud: Sending email from an instance](https://cloud.google.com/compute/docs/tutorials/sending-mail): port 25 is blocked for destinations outside your VPC.
+- [Hetzner Cloud FAQ: Why can I not send any mails from my server?](https://docs.hetzner.com/cloud/servers/faq/#why-can-i-not-send-any-mails-from-my-server): ports 25 and 465 are blocked on new cloud servers.
+
+**Developers hitting the same timeout**
+- [DigitalOcean Community: SMTP port 587 is closed](https://www.digitalocean.com/community/questions/smtp-587-ports-is-closed)
+- [DigitalOcean Community: telnet to port 587 times out](https://www.digitalocean.com/community/questions/telnet-to-port-587-timeout)
+
+**The APIs and Laravel docs this package builds on**
+- [SendGrid v3 Mail Send API](https://www.twilio.com/docs/sendgrid/api-reference/mail-send)
+- [Brevo transactional email API](https://developers.brevo.com/reference/sendtransacemail)
+- [Laravel Mail documentation](https://laravel.com/docs/mail)
+
 ## Testing
 
 ```bash
