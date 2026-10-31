@@ -5,7 +5,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-Planned as **2.0.0** (breaking changes to the driver contract).
+## [2.0.0] - 2026-10-31
 
 ### Added
 - Register your own providers from the app via `http-mailer.drivers`, no fork needed.
@@ -48,7 +48,8 @@ Planned as **2.0.0** (breaking changes to the driver contract).
 - `MailerDriver` contract for adding new providers.
 - Support for Laravel 12 and 13 on PHP 8.2+.
 
-[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lmottasin/laravel-http-mailer/releases/tag/v1.0.0
