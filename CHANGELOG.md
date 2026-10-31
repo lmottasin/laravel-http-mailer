@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-31
+
+### Changed
+- Friendlier README with images, `.env` setup guide and provider guide.
+- Contact email is now lmottasin@gmail.com.
+
 ## [1.1.0] - 2026-10-31
 
 ### Added
@@ -20,6 +26,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `MailerDriver` contract for adding new providers.
 - Support for Laravel 12 and 13 on PHP 8.2+.
 
-[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lmottasin/laravel-http-mailer/releases/tag/v1.0.0
