@@ -19,5 +19,5 @@ interface TransportFactory
      *
      * @param  array<array-key, mixed>  $config
      */
-    public function transport(array $config): TransportInterface;
+    public function transport(#[\SensitiveParameter] array $config): TransportInterface;
 }

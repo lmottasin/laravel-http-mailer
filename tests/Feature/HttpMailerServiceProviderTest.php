@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Lmottasin\HttpMailer\Tests\Feature;
 
+use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Config\Repository as ConfigContract;
 use Illuminate\Foundation\Application;
+use Illuminate\Mail\MailManager;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
+use Lmottasin\HttpMailer\Contracts\TransportFactory;
 use Lmottasin\HttpMailer\Drivers\BrevoDriver;
 use Lmottasin\HttpMailer\Drivers\SendGridDriver;
 use Lmottasin\HttpMailer\Exceptions\MissingApiKeyException;
@@ -16,6 +20,7 @@ use Lmottasin\HttpMailer\Tests\Fixtures\NullDriver;
 use Lmottasin\HttpMailer\Tests\Fixtures\OrderShipped;
 use Lmottasin\HttpMailer\Tests\Fixtures\WelcomeMail;
 use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -23,6 +28,8 @@ use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoApiTransport;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridApiTransport;
 use Symfony\Component\Mailer\Transport\FailoverTransport;
 use Symfony\Component\Mailer\Transport\NullTransport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class HttpMailerServiceProviderTest extends TestCase
@@ -151,6 +158,93 @@ final class HttpMailerServiceProviderTest extends TestCase
         $this->expectExceptionMessage('must implement');
 
         $this->registerProviderAgain();
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function badDriverNames(): array
+    {
+        return [
+            'built-in transport' => ['smtp'],
+            'empty' => [' '],
+            'dotted' => ['my.api'],
+        ];
+    }
+
+    #[DataProvider('badDriverNames')]
+    public function test_rejects_a_driver_with_an_unsafe_name(string $name): void
+    {
+        $driver = new class($name) implements TransportFactory
+        {
+            private static string $driverName = '';
+
+            public function __construct(string $name)
+            {
+                self::$driverName = $name;
+            }
+
+            public static function name(): string
+            {
+                return self::$driverName;
+            }
+
+            /**
+             * @param  array<array-key, mixed>  $config
+             */
+            public function transport(array $config): TransportInterface
+            {
+                return new NullTransport;
+            }
+        };
+
+        config()->set('http-mailer.drivers', [$driver::class]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("has the name [{$name}]");
+
+        $this->registerProviderAgain();
+    }
+
+    public function test_rejects_two_drivers_with_the_same_name(): void
+    {
+        config()->set('http-mailer.drivers', [SendGridDriver::class, SendGridDriver::class]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('is used by another driver');
+
+        $this->registerProviderAgain();
+    }
+
+    public function test_builds_transports_from_the_mail_managers_current_app(): void
+    {
+        $manager = app('mail.manager');
+        $this->assertInstanceOf(MailManager::class, $manager);
+
+        // Octane hands the mail manager a fresh app per request; per-request config must be used.
+        $tenantConfig = new ConfigRepository(['mail' => config('mail'), 'services' => ['sendgrid' => ['key' => 'SG.tenant-key']]]);
+        $tenantApp = clone app();
+        $tenantApp->instance('config', $tenantConfig);
+        $tenantApp->instance(ConfigContract::class, $tenantConfig);
+        $tenantApp->instance('view', app('view'));
+        $tenantApp->instance('events', app('events'));
+
+        $authorization = [];
+        $tenantApp->instance(HttpClientInterface::class, new MockHttpClient(function (string $method, string $url, array $options) use (&$authorization): MockResponse {
+            $headers = is_array($options['normalized_headers'] ?? null) ? $options['normalized_headers'] : [];
+            $authorization = is_array($headers['authorization'] ?? null) ? $headers['authorization'] : [];
+
+            return new MockResponse('', ['http_code' => 202, 'response_headers' => ['x-message-id' => 'abc']]);
+        }));
+
+        $manager->setApplication($tenantApp);
+        $manager->forgetMailers();
+
+        $manager->mailer('sendgrid')->getSymfonyTransport()->send(
+            (new Email)->from('app@example.com')->to('jane@example.com')->subject('Hi')->text('Hello'),
+        );
+
+        $this->assertSame(['Authorization: Bearer SG.tenant-key'], $authorization);
     }
 
     /**

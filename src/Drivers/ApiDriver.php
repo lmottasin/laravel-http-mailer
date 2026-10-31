@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lmottasin\HttpMailer\Drivers;
 
 use Illuminate\Contracts\Config\Repository;
+use InvalidArgumentException;
 use Lmottasin\HttpMailer\Contracts\TransportFactory;
 use Lmottasin\HttpMailer\Exceptions\MissingApiKeyException;
 use Symfony\Component\HttpClient\HttpClient;
@@ -15,6 +16,18 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 abstract class ApiDriver implements TransportFactory
 {
+    /**
+     * HTTP client defaults. A mailer's `client` options override them.
+     *
+     * - timeout / max_duration: a slow API can't hang a request that sends mail synchronously.
+     * - max_redirects: the APIs never redirect, and a redirect could forward the API key header.
+     */
+    public const DEFAULT_CLIENT_OPTIONS = [
+        'timeout' => 10,
+        'max_duration' => 30,
+        'max_redirects' => 0,
+    ];
+
     /**
      * @param  HttpClientInterface|null  $client  Overrides the HTTP client for every mailer (handy in tests).
      */
@@ -38,13 +51,15 @@ abstract class ApiDriver implements TransportFactory
      *
      * @throws MissingApiKeyException
      */
-    protected function apiKey(array $config): string
+    protected function apiKey(#[\SensitiveParameter] array $config): string
     {
         $key = array_key_exists('key', $config)
             ? $config['key']
             : $this->config->get('services.'.static::name().'.key');
 
-        if (! is_string($key) || trim($key) === '') {
+        $key = is_string($key) ? trim($key) : '';
+
+        if ($key === '') {
             throw MissingApiKeyException::forTransport(static::name(), $this->apiKeyEnvironmentVariable());
         }
 
@@ -52,18 +67,28 @@ abstract class ApiDriver implements TransportFactory
     }
 
     /**
-     * The HTTP client for the transport, built from the mailer's `client` options (e.g. `timeout`).
+     * The HTTP client for the transport: safe defaults plus the mailer's `client` options.
      *
      * @param  array<array-key, mixed>  $config
+     *
+     * @throws InvalidArgumentException
      */
-    protected function httpClient(array $config): HttpClientInterface
+    protected function httpClient(#[\SensitiveParameter] array $config): HttpClientInterface
     {
-        if ($this->client !== null) {
-            return $this->client;
-        }
-
         $options = $config['client'] ?? [];
 
-        return HttpClient::create(is_array($options) ? $options : []);
+        if (! is_array($options)) {
+            throw new InvalidArgumentException(sprintf(
+                'The [client] option of the [%s] mailer must be an array of HTTP client options, %s given.',
+                static::name(),
+                get_debug_type($options),
+            ));
+        }
+
+        $options = array_replace(self::DEFAULT_CLIENT_OPTIONS, $options);
+
+        return $this->client !== null
+            ? $this->client->withOptions($options)
+            : HttpClient::create($options);
     }
 }
