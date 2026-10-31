@@ -20,7 +20,7 @@ SendGrid and Brevo both have REST APIs on **port 443**, which is never blocked. 
 | Package | Version |
 |---------|---------|
 | PHP     | 8.2+    |
-| Laravel | 11, 12, 13 |
+| Laravel | 12, 13 |
 
 ## Installation
 
