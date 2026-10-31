@@ -4,77 +4,57 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="src/base.css">
 <style>
-  .grid { margin-top: 26px; overflow: hidden; }
-  .row { display: grid; grid-template-columns: 2fr 1fr .85fr .85fr 1.45fr; border-bottom: 1px solid var(--line); align-items: center; }
-  .row:last-child { border-bottom: 0; }
-  .row > div { padding: 16px 18px; font-size: 15px; line-height: 1.45; }
-  .row.head { align-items: stretch; background: var(--soft); }
-  .row.head > div { font: 600 12px "JetBrains Mono"; letter-spacing: .05em; color: var(--muted); background: var(--soft); text-transform: uppercase; }
-  .row.me { background: #f6fbf7; box-shadow: inset 3px 0 0 var(--green); }
-  .pkg { display: flex; align-items: center; gap: 12px; }
-  .pkg .name { font: 600 14px "JetBrains Mono"; }
-  .pkg .desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .ico { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; display: grid; place-items: center; background: #fff; flex: none; }
-  .yes, .no { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
-  .yes { color: var(--green); } .no { color: var(--red); }
-  .yes::before, .no::before { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: #fff; }
-  .yes::before { content: "✓"; background: var(--green); }
-  .no::before { content: "✕"; background: var(--red); }
-  .provs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; }
-  .work { font-size: 14px; color: var(--ink); }
-  .work .mono { font-size: 12.5px; background: var(--soft); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }
-  .m { display: none; }
+  .grid { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .pkg { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+  .pkg.me { box-shadow: inset 0 0 0 2px var(--green), 0 8px 24px rgba(27,27,31,.07); }
+  .top { display: flex; align-items: center; gap: 12px; }
+  .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: #fff; border: 1px solid #e4e4de; box-shadow: 0 4px 10px rgba(27,27,31,.06); flex: none; }
+  .name { font: 600 14px/1.35 "JetBrains Mono"; word-break: break-word; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #ececE6; font-size: 15px; font-weight: 500; }
+  .yes, .no { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 700; color: #fff; flex: none; }
+  .yes { background: var(--green); } .no { background: var(--red); }
+  .me .tag { align-self: flex-start; }
 
   @media (max-width: 700px) {
-    .row { grid-template-columns: 1fr; }
-    .row.head { display: none; }
-    .row > div { padding: 5px 16px; }
-    .row > div:first-child { padding-top: 16px; padding-bottom: 8px; }
-    .row > div:last-child { padding-bottom: 16px; }
-    .m { display: inline-block; width: 150px; font: 600 11px "JetBrains Mono"; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-    .line { display: flex; align-items: center; }
+    .grid { grid-template-columns: 1fr; gap: 16px; }
   }
 </style>
 </head>
 <body>
+  <div class="eyebrow">Alternatives</div>
   <h2>How it compares</h2>
-  <p class="sub">Other packages either cover one provider or make you write the glue code yourself.</p>
 
-  <div class="card grid">
-    <div class="row head">
-      <div>Package</div><div>Providers</div><div>Works with Mail::</div><div>Many providers</div><div>What you have to do</div>
+  <div class="grid">
+    <div class="card pkg me">
+      <div class="top"><div class="ic">{{icon:laravel:ff2d20:22}}</div><div class="name">lmottasin/<br>laravel-http-mailer</div></div>
+      <span class="tag ok">THIS PACKAGE</span>
+      <div class="row">Works with Mail::<span class="yes">✓</span></div>
+      <div class="row">SendGrid + Brevo<span class="yes">✓</span></div>
+      <div class="row">No glue code<span class="yes">✓</span></div>
     </div>
 
-    <div class="row me">
-      <div class="pkg"><div class="ico">{{icon:laravel:ff2d20:18}}</div><div><div class="name">lmottasin/laravel-http-mailer</div><div class="desc">this package</div></div></div>
-      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} {{icon:brevo:0b996e:16}} + easy to add</span></div>
-      <div class="line"><span class="m">Works with Mail::</span><span class="yes">Yes</span></div>
-      <div class="line"><span class="m">Many providers</span><span class="yes">Yes</span></div>
-      <div class="line"><span class="m">You do</span><span class="work">Install + one <span class="mono">.env</span> line</span></div>
+    <div class="card pkg">
+      <div class="top"><div class="ic">{{icon:symfony:000000:22}}</div><div class="name">symfony/<br>*-mailer bridges</div></div>
+      <span class="tag" style="background:#efefea;color:var(--muted)">RAW BRIDGES</span>
+      <div class="row">Works with Mail::<span class="no">✕</span></div>
+      <div class="row">SendGrid + Brevo<span class="no">✕</span></div>
+      <div class="row">No glue code<span class="no">✕</span></div>
     </div>
 
-    <div class="row">
-      <div class="pkg"><div class="ico">{{icon:symfony:000000:18}}</div><div><div class="name">symfony/sendgrid-mailer<br>symfony/brevo-mailer</div><div class="desc">raw Symfony bridges</div></div></div>
-      <div class="line"><span class="m">Providers</span><span class="provs">One per package</span></div>
-      <div class="line"><span class="m">Works with Mail::</span><span class="no">No</span></div>
-      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
-      <div class="line"><span class="m">You do</span><span class="work">Write <span class="mono">Mail::extend()</span> glue for each</span></div>
+    <div class="card pkg">
+      <div class="top"><div class="ic">{{icon:sendgrid:1a82e2:22}}</div><div class="name">s-ichikawa/<br>sendgrid-driver</div></div>
+      <span class="tag" style="background:#efefea;color:var(--muted)">SENDGRID ONLY</span>
+      <div class="row">Works with Mail::<span class="yes">✓</span></div>
+      <div class="row">SendGrid + Brevo<span class="no">✕</span></div>
+      <div class="row">No glue code<span class="yes">✓</span></div>
     </div>
 
-    <div class="row">
-      <div class="pkg"><div class="ico">{{icon:sendgrid:1a82e2:18}}</div><div><div class="name">s-ichikawa/laravel-sendgrid-driver</div><div class="desc">community driver</div></div></div>
-      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} SendGrid only</span></div>
-      <div class="line"><span class="m">Works with Mail::</span><span class="yes">Yes</span></div>
-      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
-      <div class="line"><span class="m">You do</span><span class="work">Add mailer + services config</span></div>
-    </div>
-
-    <div class="row">
-      <div class="pkg"><div class="ico">{{icon:sendgrid:1a82e2:18}}</div><div><div class="name">sendgrid/sendgrid</div><div class="desc">official PHP SDK</div></div></div>
-      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} SendGrid only</span></div>
-      <div class="line"><span class="m">Works with Mail::</span><span class="no">No</span></div>
-      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
-      <div class="line"><span class="m">You do</span><span class="work">Rewrite mail code to SDK calls</span></div>
+    <div class="card pkg">
+      <div class="top"><div class="ic">{{icon:sendgrid:1a82e2:22}}</div><div class="name">sendgrid/<br>sendgrid</div></div>
+      <span class="tag" style="background:#efefea;color:var(--muted)">OFFICIAL SDK</span>
+      <div class="row">Works with Mail::<span class="no">✕</span></div>
+      <div class="row">SendGrid + Brevo<span class="no">✕</span></div>
+      <div class="row">No glue code<span class="no">✕</span></div>
     </div>
   </div>
 </body>

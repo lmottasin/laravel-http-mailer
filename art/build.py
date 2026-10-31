@@ -3,6 +3,7 @@
 Each template is rendered twice:
   <name>.png         desktop, 1280px wide
   <name>-mobile.png  mobile, 480px wide (templates switch layout at max-width: 700px)
+src/<name>-animated.svg becomes <name>.svg (icons inlined, no other processing).
 
 Icons: write {{icon:NAME:HEXCOLOR:SIZE}} in a template; NAME is a file in art/icons/ (simple-icons).
 Usage: python3 art/build.py [name ...]
@@ -41,6 +42,16 @@ def render(name):
         built.unlink()
 
 
+def render_svg(src):
+    """src/<name>-animated.svg -> <name>.svg with icons inlined (animated SVGs play inside GitHub READMEs)."""
+    out = ART / (src.stem.removesuffix("-animated") + ".svg")
+    out.write_text(re.sub(r"\{\{icon:([a-z]+):([0-9a-fA-F]{6}):(\d+)\}\}", icon, src.read_text()))
+    print(f"{out.name:32} {out.stat().st_size // 1024} KB")
+
+
 names = sys.argv[1:] or [p.stem for p in sorted((ART / "src").glob("*.html"))]
 for n in names:
     render(n)
+for svg in sorted((ART / "src").glob("*-animated.svg")):
+    if not sys.argv[1:] or svg.stem.removesuffix("-animated") in names:
+        render_svg(svg)

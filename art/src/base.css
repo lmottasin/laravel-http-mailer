@@ -12,10 +12,15 @@ html, body { background: var(--bg); }
 body { color: var(--ink); font-family: Inter, sans-serif; padding: 48px 64px; }
 pre, code, .mono { font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0; }
 
-h2 { font-size: 32px; font-weight: 700; letter-spacing: -.02em; }
+h2 { margin-top: 8px; font-size: 36px; font-weight: 700; letter-spacing: -.02em; }
 .sub { margin-top: 8px; font-size: 17px; color: var(--muted); line-height: 1.45; }
 
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+.card { background: var(--card); border: 1px solid #e4e4de; border-radius: 16px; box-shadow: 0 1px 2px rgba(27,27,31,.04), 0 8px 24px rgba(27,27,31,.07); }
+.eyebrow { font: 600 13px "JetBrains Mono"; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.badge { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.badge.bad { background: var(--red-bg); color: var(--red); }
+.badge.ok { background: var(--green-bg); color: var(--green); }
+.badge.neutral { background: #efefea; color: var(--ink); }
 .tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font: 600 12px "JetBrains Mono"; letter-spacing: .04em; }
 .tag.bad { color: var(--red); background: var(--red-bg); }
 .tag.ok { color: var(--green); background: var(--green-bg); }

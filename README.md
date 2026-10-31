@@ -1,6 +1,6 @@
 <picture>
   <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero-mobile.png">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero.png" alt="Your server blocks SMTP, so Laravel emails time out. The fix: send through the SendGrid or Brevo API over HTTPS. No code changes." width="100%">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero.svg" alt="Cloud hosts block SMTP ports for security. Send over HTTPS port 443 instead. Your email code doesn't change." width="100%">
 </picture>
 
 <p align="center">
@@ -12,21 +12,15 @@
 
 # Laravel HTTP Mailer
 
-**The problem:** your server blocks SMTP, so Laravel emails time out.
-**The fix:** this package sends them through the **SendGrid** or **Brevo** HTTP API over HTTPS instead.
+- 🔒 **Problem:** cloud hosts block SMTP ports (25, 465, 587) for security, so Laravel emails time out.
+- ✅ **Fix:** send through the **SendGrid** or **Brevo** API over HTTPS (port 443).
+- ✨ **No changes to your email code.** Mailables, Notifications and `Mail::` keep working. Just one line in `.env`.
 
-> [!TIP]
-> **No code changes.** Your Mailables, Notifications and `Mail::to()->send()` calls keep working exactly as they do now. You install the package and change one line in `.env`. That's all.
-
-## Why do I need this?
-
-Most cloud hosts (AWS, DigitalOcean, Google Cloud, Hetzner, and others) **block outgoing SMTP ports 25, 465 and 587** to fight spam. Laravel's default `smtp` mailer uses those ports, so in production your emails just time out, with no clear reason.
-
-SendGrid and Brevo both have an HTTP API on **port 443**, the same port every website uses, so it's never blocked. This package plugs those APIs into Laravel's mail system. As a bonus, when something is wrong you get a clear error (like `403: sender not verified`) instead of a silent timeout.
+## Why
 
 <picture>
   <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/smtp-vs-api-mobile.png">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/smtp-vs-api.png" alt="SMTP vs HTTP API: SMTP ports are blocked on AWS, DigitalOcean, Google Cloud and Hetzner and fail with a timeout; the HTTP API uses port 443 and returns clear errors. Your Laravel code does not change." width="100%">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/smtp-vs-api.png" alt="SMTP: ports 25, 465 and 587 are blocked on AWS, DigitalOcean, Google Cloud and Hetzner, and you see 'Connection timed out'. HTTP API: port 443 is open on every host, and errors are clear, like '403: sender not verified'. Your email code doesn't change." width="100%">
 </picture>
 
 ## Requirements
@@ -284,18 +278,18 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 
 <picture>
   <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/compare-mobile.png">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/compare.png" alt="Comparison: this package supports SendGrid and Brevo through Mail:: with one .env line; Symfony bridges need Mail::extend glue; s-ichikawa driver is SendGrid only; the official SendGrid SDK needs a code rewrite." width="100%">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/compare.png" alt="Comparison of this package with the Symfony mailer bridges, s-ichikawa/laravel-sendgrid-driver and the official sendgrid/sendgrid SDK." width="100%">
 </picture>
 
 <details>
 <summary>Same comparison as text</summary>
 
-| Package | Providers | Works with `Mail::` out of the box | Multiple providers |
-|---|---|---|---|
-| **lmottasin/laravel-http-mailer** | SendGrid, Brevo (easy to extend) | ✅ | ✅ |
-| `symfony/sendgrid-mailer`, `symfony/brevo-mailer` | One each | ❌ You write the `Mail::extend()` glue | ❌ |
-| `s-ichikawa/laravel-sendgrid-driver` | SendGrid | ✅ | ❌ |
-| `sendgrid/sendgrid` (official SDK) | SendGrid | ❌ Not a mail driver | ❌ |
+| Package | Works with `Mail::` | SendGrid + Brevo | No glue code |
+|---|:-:|:-:|:-:|
+| **lmottasin/laravel-http-mailer** | ✅ | ✅ | ✅ |
+| `symfony/*-mailer` bridges | ❌ | ❌ | ❌ |
+| `s-ichikawa/laravel-sendgrid-driver` | ✅ | ❌ | ✅ |
+| `sendgrid/sendgrid` (SDK) | ❌ | ❌ | ❌ |
 
 </details>
 
@@ -303,20 +297,20 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 
 <picture>
   <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/troubleshooting-mobile.png">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/troubleshooting.png" alt="Troubleshooting: 403 means verify your sender domain; 401 means wrong API key; still on port 587 means MAIL_MAILER is still smtp; ignored .env means run config:clear; unsupported transport means dump-autoload and config:clear; queued mail missing means check failed_jobs and logs." width="100%">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/troubleshooting.png" alt="Troubleshooting: common errors and their fixes." width="100%">
 </picture>
 
-<details open>
-<summary>Copy-paste version</summary>
+<details>
+<summary>Same fixes as text</summary>
 
-| You see | What to do |
+| Error | Fix |
 |---|---|
-| **HTTP 403** from the API | The sender domain isn't verified. Verify it in your provider's dashboard. |
-| **401 / "Unauthorized"** | Wrong API key. For Brevo, use the `xkeysib-` API key, not the SMTP password. |
-| `Unsupported mail transport [sendgrid]` | Run `composer dump-autoload` and `php artisan config:clear`. |
-| New `.env` values are ignored | Your config is cached. Run `php artisan config:clear` (or `config:cache` again in production). |
-| Queued emails never arrive | Check the `failed_jobs` table and `storage/logs`. Look for `TransportException`, which contains the provider's error message. |
-| Still connecting to port 587 | `MAIL_MAILER` is still `smtp`. Set it to `sendgrid` or `brevo`. |
+| `403` sender not verified | Verify your domain with the provider |
+| `401` invalid API key | Check the key. Brevo needs `xkeysib-`, not the SMTP password |
+| Timeout on port 587 | Set `MAIL_MAILER=sendgrid` (or `brevo`) |
+| `.env` changes ignored | `php artisan config:clear` |
+| `Unsupported mail transport [sendgrid]` | `composer dump-autoload` |
+| Queued mail lost | Check `failed_jobs` and `storage/logs` |
 
 </details>
 
