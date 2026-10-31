@@ -8,8 +8,10 @@ Thanks for helping out! Contributions are welcome through pull requests on [GitH
 git clone https://github.com/<your-username>/laravel-http-mailer.git
 cd laravel-http-mailer
 composer install
-composer test
+composer check     # Pint + PHPStan + tests, same as CI
 ```
+
+Individual steps: `composer lint` (fix code style), `composer analyse` (PHPStan), `composer test`.
 
 ## Pull requests
 
@@ -19,14 +21,13 @@ composer test
 - **Follow [SemVer](https://semver.org/).** Don't break the public API without a good reason.
 - **Keep commits clean.** Squash "fix typo" commits before asking for review.
 
-## Adding a new provider
+## Adding a built-in provider
 
-1. Create `src/Drivers/<Provider>Driver.php` implementing `Lmottasin\HttpMailer\Contracts\MailerDriver`.
-2. Register it in the `$drivers` array of `HttpMailerServiceProvider`.
-3. Add the Symfony bridge to `composer.json` (if one exists).
-4. Add its key to `config/http-mailer.php`.
-5. Add a unit test in `tests/Unit` and extend `tests/Feature/HttpMailerServiceProviderTest.php`.
-6. Add the provider to the "Supported providers" table in `README.md`.
+1. Create `src/Drivers/<Provider>Driver.php`: a `final` class extending `ApiDriver` (it handles the API key and HTTP client).
+2. Add it to `drivers` in `config/http-mailer.php` and its key to `config/services.php`.
+3. Add the Symfony bridge to `require` in `composer.json` (if one exists).
+4. Add a unit test that checks the request with `MockHttpClient` (see `tests/Unit/SendGridDriverTest.php`) and extend the feature test.
+5. Add the provider to the "Supported providers" table in `README.md`.
 
 ## Reporting bugs
 
@@ -42,4 +43,5 @@ Edit the template, then rebuild (needs Google Chrome and ImageMagick):
 ```bash
 python3 art/build.py              # all images
 python3 art/build.py troubleshooting
+python3 art/build.py social          # GitHub social preview, uploaded in repo Settings
 ```

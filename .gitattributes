@@ -8,3 +8,5 @@
 /phpunit.xml        export-ignore
 /CONTRIBUTING.md    export-ignore
 /art export-ignore
+/pint.json          export-ignore
+/phpstan.neon.dist  export-ignore

@@ -4,29 +4,31 @@ declare(strict_types=1);
 
 namespace Lmottasin\HttpMailer\Drivers;
 
-use Lmottasin\HttpMailer\Contracts\MailerDriver;
 use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
-class BrevoDriver implements MailerDriver
+final class BrevoDriver extends ApiDriver
 {
-    public const NAME = 'brevo';
-
-    public function name(): string
+    public static function name(): string
     {
-        return self::NAME;
+        return 'brevo';
     }
 
     /**
-     * @param  array<string, mixed>  $config
+     * @param  array<array-key, mixed>  $config
      */
     public function transport(array $config): TransportInterface
     {
-        $key = (string) ($config['key'] ?? config('http-mailer.brevo.key'));
+        return (new BrevoTransportFactory(client: $this->httpClient($config)))->create(new Dsn(
+            scheme: 'brevo+api',
+            host: 'default',
+            user: $this->apiKey($config),
+        ));
+    }
 
-        return (new BrevoTransportFactory)->create(
-            new Dsn(scheme: 'brevo+api', host: 'default', user: $key),
-        );
+    protected function apiKeyEnvironmentVariable(): string
+    {
+        return 'BREVO_API_KEY';
     }
 }

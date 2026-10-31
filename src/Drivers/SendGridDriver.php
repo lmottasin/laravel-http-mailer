@@ -4,29 +4,34 @@ declare(strict_types=1);
 
 namespace Lmottasin\HttpMailer\Drivers;
 
-use Lmottasin\HttpMailer\Contracts\MailerDriver;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
-class SendGridDriver implements MailerDriver
+final class SendGridDriver extends ApiDriver
 {
-    public const NAME = 'sendgrid';
-
-    public function name(): string
+    public static function name(): string
     {
-        return self::NAME;
+        return 'sendgrid';
     }
 
     /**
-     * @param  array<string, mixed>  $config
+     * @param  array<array-key, mixed>  $config
      */
     public function transport(array $config): TransportInterface
     {
-        $key = (string) ($config['key'] ?? config('http-mailer.sendgrid.key'));
+        $region = $config['region'] ?? $this->config->get('services.sendgrid.region');
 
-        return (new SendgridTransportFactory)->create(
-            new Dsn(scheme: 'sendgrid+api', host: 'default', user: $key),
-        );
+        return (new SendgridTransportFactory(client: $this->httpClient($config)))->create(new Dsn(
+            scheme: 'sendgrid+api',
+            host: 'default',
+            user: $this->apiKey($config),
+            options: is_string($region) && $region !== '' ? ['region' => $region] : [],
+        ));
+    }
+
+    protected function apiKeyEnvironmentVariable(): string
+    {
+        return 'SENDGRID_API_KEY';
     }
 }

@@ -47,7 +47,7 @@ Everything you already send keeps working. Only `.env` changes.
 | Package | Mailables & Notifications | SendGrid + Brevo | No glue code |
 |---|:-:|:-:|:-:|
 | **lmottasin/laravel-http-mailer** | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> |
-| `symfony/*-mailer` bridges | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
+| `symfony/*-mailer` bridges | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
 | `s-ichikawa/laravel-sendgrid-driver` | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> |
 | `sendgrid/sendgrid` (SDK) | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
 
@@ -58,7 +58,7 @@ Everything you already send keeps working. Only `.env` changes.
 | | Version |
 |---|---|
 | PHP | 8.2 or newer |
-| Laravel | 11, 12 or 13 |
+| Laravel | 12 or 13 (11 best-effort: it is end-of-life) |
 | Account | SendGrid **or** Brevo, with an API key |
 
 ## Setup in 3 steps
@@ -200,31 +200,36 @@ Then set `MAIL_MAILER=api` in `.env`, along with both API keys.
 
 ## Optional settings
 
-**Publish the config file**, if you want to see or change where the keys come from:
-
-```bash
-php artisan vendor:publish --tag=http-mailer-config
-```
-
-This creates `config/http-mailer.php`:
+**API keys** are read from `config/services.php`, like Laravel's own Mailgun, Postmark and Resend keys. The package fills in these defaults, so you only need to touch `services.php` to change them:
 
 ```php
-return [
-    'sendgrid' => ['key' => env('SENDGRID_API_KEY')],
-    'brevo'    => ['key' => env('BREVO_API_KEY')],
-];
+'sendgrid' => [
+    'key' => env('SENDGRID_API_KEY'),
+    'region' => env('SENDGRID_REGION'), // "eu" for SendGrid EU accounts
+],
+
+'brevo' => [
+    'key' => env('BREVO_API_KEY'),
+],
 ```
 
-**Define a mailer yourself.** The package adds `sendgrid` and `brevo` to `mail.mailers` for you. If you add your own entry in `config/mail.php`, yours wins:
+> [!NOTE]
+> If your `config/services.php` already has a `sendgrid` or `brevo` block, the package leaves it as it is. Add `'region' => env('SENDGRID_REGION')` to it yourself if you need the EU region.
+
+**Per-mailer settings.** The package adds `sendgrid` and `brevo` to `mail.mailers` for you. If you define them yourself in `config/mail.php`, yours wins:
 
 ```php
 'mailers' => [
     'sendgrid' => [
         'transport' => 'sendgrid',
-        'key' => env('MY_OTHER_SENDGRID_KEY'),
+        'key' => env('MY_OTHER_SENDGRID_KEY'), // if this is missing you get a clear error, never another account's key
+        'region' => 'eu',                      // SendGrid EU data residency
+        'client' => ['timeout' => 10],         // options for the Symfony HTTP client
     ],
 ],
 ```
+
+**A missing or empty key** throws `MissingApiKeyException` with the name of the `.env` variable to set, instead of failing later with an HTTP 401.
 
 ## Supported providers
 
@@ -233,75 +238,53 @@ return [
 | <img src="https://cdn.simpleicons.org/sendgrid/1A82E2" width="16"> SendGrid | `sendgrid` | `SENDGRID_API_KEY` | `symfony/sendgrid-mailer` |
 | <img src="https://cdn.simpleicons.org/brevo/0B996E" width="16"> Brevo (formerly Sendinblue) | `brevo` | `BREVO_API_KEY` | `symfony/brevo-mailer` |
 
-Need Mailgun, Postmark, Resend or something else? Check whether Laravel already supports it (Mailgun, Postmark, Resend and SES are built in). If not, adding it here takes about 20 lines. See below.
+Need Mailgun, Postmark, Resend or something else? Check whether Laravel already supports it (Mailgun, Postmark, Resend and SES are built in). If not, you can add it yourself in about 20 lines. See below.
 
 ## Adding a new provider
 
-Each provider is one small class. Say you want to add **Foo**:
+You can add a provider from your own app, without forking the package.
 
-**1. Create the driver** in `src/Drivers/FooDriver.php`:
+**1. Create a class** that implements `TransportFactory` (for example `app/Mail/FooTransportFactory.php`):
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-namespace Lmottasin\HttpMailer\Drivers;
-
-use Lmottasin\HttpMailer\Contracts\MailerDriver;
-use Symfony\Component\Mailer\Bridge\Foo\Transport\FooTransportFactory;
+use Lmottasin\HttpMailer\Contracts\TransportFactory;
+use Symfony\Component\Mailer\Bridge\Foo\Transport\FooTransportFactory as SymfonyFoo;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
-class FooDriver implements MailerDriver
+final class FooTransportFactory implements TransportFactory
 {
-    public const NAME = 'foo';            // becomes MAIL_MAILER=foo
-
-    public function name(): string
+    public static function name(): string
     {
-        return self::NAME;
+        return 'foo'; // MAIL_MAILER=foo
     }
 
-    /**
-     * @param  array<string, mixed>  $config
-     */
     public function transport(array $config): TransportInterface
     {
-        $key = (string) ($config['key'] ?? config('http-mailer.foo.key'));
-
-        return (new FooTransportFactory)->create(
-            new Dsn(scheme: 'foo+api', host: 'default', user: $key),
+        return (new SymfonyFoo)->create(
+            new Dsn('foo+api', 'default', $config['key'] ?? config('services.foo.key')),
         );
     }
 }
 ```
 
-**2. Register it** in `src/HttpMailerServiceProvider.php`:
+**2. List it** in the published config (`php artisan vendor:publish --tag=http-mailer-config`):
 
 ```php
-protected array $drivers = [
+// config/http-mailer.php
+'drivers' => [
     SendGridDriver::class,
     BrevoDriver::class,
-    FooDriver::class,   // add this line
-];
+    App\Mail\FooTransportFactory::class,
+],
 ```
 
-**3. Add its key** to `config/http-mailer.php`:
-
-```php
-'foo' => ['key' => env('FOO_API_KEY')],
-```
-
-**4. Add the Symfony bridge** (if one exists) to `require` in `composer.json`, e.g. `symfony/foo-mailer`.
-
-**5. Add tests** in `tests/Unit/FooDriverTest.php` and a case in `tests/Feature/HttpMailerServiceProviderTest.php`, then run `composer test`.
-
-Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+That's it: `MAIL_MAILER=foo` now works. Want it built in for everyone? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## How it works under the hood
 
-1. **`register()`** loads the package config, registers each driver, and adds a `mail.mailers.<name>` entry (unless you already defined one).
-2. **`boot()`** calls Laravel's `Mail::extend()` for each driver.
+1. **`register()`** merges the package config and default `services` keys, then adds a `mail.mailers.<name>` entry for each driver (unless you already defined one).
+2. **`boot()`** waits until Laravel's mail manager is first used, then registers each driver with `extend()`. Requests that send no mail pay nothing.
 3. When Laravel sends an email, the driver builds a Symfony transport through the official SendGrid or Brevo bridge, and that transport makes an HTTPS request to the provider's API.
 
 ## Troubleshooting
@@ -318,9 +301,11 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 |---|---|
 | `403` sender not verified | Verify your domain with the provider |
 | `401` invalid API key | Check the key. Brevo needs `xkeysib-`, not the SMTP password |
+| `MissingApiKeyException` | Set the `.env` variable named in the message, then `php artisan config:clear` |
 | Timeout on port 587 | Set `MAIL_MAILER=sendgrid` (or `brevo`) |
 | `.env` changes ignored | `php artisan config:clear` |
-| `Unsupported mail transport [sendgrid]` | `composer dump-autoload` |
+| SendGrid EU account rejects requests | Set `SENDGRID_REGION=eu` |
+| `Unsupported mail transport [sendgrid]` | `php artisan optimize:clear` (stale package or config cache) |
 | Queued mail lost | Check `failed_jobs` and `storage/logs` |
 
 </details>
