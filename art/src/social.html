@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="src/base.css">
+<style>
+  /* Social preview: 1280x640, viewed at ~500px wide, so everything is oversized. Content stays inside a 80px safe margin. */
+  body { width: 1280px; height: 640px; padding: 80px 88px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+  .top { display: flex; align-items: center; gap: 18px; }
+  .brand { margin-left: auto; font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+  h1 { font-size: 104px; line-height: 1; font-weight: 800; letter-spacing: -.04em; }
+  h1 span { color: var(--green); }
+  .tagline { font-size: 40px; font-weight: 600; color: var(--muted); letter-spacing: -.01em; margin-top: 22px; }
+  .tagline b { color: var(--green); }
+  .flow { display: flex; align-items: center; gap: 22px; }
+  .ic { width: 84px; height: 84px; border-radius: 22px; display: grid; place-items: center; background: #fff; border: 1px solid #e4e4de; box-shadow: 0 8px 24px rgba(27,27,31,.08); }
+  .pill { font: 700 30px "JetBrains Mono"; padding: 14px 22px; border-radius: 16px; }
+  .pill.bad { background: var(--red-bg); color: var(--red); text-decoration: line-through; text-decoration-thickness: 4px; }
+  .pill.ok { background: var(--green-bg); color: var(--green); }
+  .arrow { font-size: 44px; color: #b5b5ae; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div>
+    <h1>SMTP blocked?<br><span>Send over HTTPS.</span></h1>
+    <div class="tagline">Laravel mail via SendGrid &amp; Brevo. <b>No code changes.</b></div>
+  </div>
+
+  <div class="flow">
+    <div class="ic">{{icon:laravel:ff2d20:48}}</div>
+    <span class="pill bad">:587</span>
+    <span class="pill ok">:443</span>
+    <span class="arrow">→</span>
+    <div class="ic">{{icon:sendgrid:1a82e2:46}}</div>
+    <div class="ic">{{icon:brevo:0b996e:46}}</div>
+    <div class="brand">Laravel HTTP Mailer</div>
+  </div>
+</body>
+</html>

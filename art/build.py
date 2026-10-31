@@ -13,7 +13,8 @@ import pathlib, re, subprocess, sys
 ART = pathlib.Path(__file__).resolve().parent
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 BG = "#f4f4f1"
-FIXED_HEIGHT = {"hero": 640}  # desktop hero keeps a 2:1 ratio for the GitHub social preview
+FIXED_HEIGHT = {"hero": 640, "social": 640}  # 2:1 images
+DESKTOP_ONLY = {"social"}  # GitHub social preview: no mobile variant
 VARIANTS = {"": (1280, 64), "-mobile": (480, 40)}  # suffix: (css width, trimmed border in image px)
 
 
@@ -29,6 +30,8 @@ def render(name):
     built.write_text(html)
     try:
         for suffix, (width, border) in VARIANTS.items():
+            if suffix and name in DESKTOP_ONLY:
+                continue
             png = ART / f"{name}{suffix}.png"
             fixed = FIXED_HEIGHT.get(name) if suffix == "" else None
             subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
