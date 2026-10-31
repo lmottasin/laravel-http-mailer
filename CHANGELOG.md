@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-31
+
 ### Security
 - SendGrid `region` only accepts `global` or `eu`. Before, any value went into the API hostname, so a bad `SENDGRID_REGION` could send mail and the API key to another host.
 - HTTP requests no longer follow redirects, so the API key header can't be forwarded to another host.
@@ -62,7 +64,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `MailerDriver` contract for adding new providers.
 - Support for Laravel 12 and 13 on PHP 8.2+.
 
-[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/lmottasin/laravel-http-mailer/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lmottasin/laravel-http-mailer/compare/v1.0.0...v1.1.0
