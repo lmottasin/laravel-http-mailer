@@ -8,7 +8,7 @@ src/<name>-animated.svg becomes <name>.svg (icons inlined, no other processing).
 Icons: write {{icon:NAME:HEXCOLOR:SIZE}} in a template; NAME is a file in art/icons/ (simple-icons).
 Usage: python3 art/build.py [name ...]
 """
-import pathlib, re, subprocess, sys
+import base64, pathlib, re, subprocess, sys
 
 ART = pathlib.Path(__file__).resolve().parent
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
@@ -48,7 +48,10 @@ def render(name):
 def render_svg(src):
     """src/<name>-animated.svg -> <name>.svg with icons inlined (animated SVGs play inside GitHub READMEs)."""
     out = ART / (src.stem.removesuffix("-animated") + ".svg")
-    out.write_text(re.sub(r"\{\{icon:([a-z]+):([0-9a-fA-F]{6}):(\d+)\}\}", icon, src.read_text()))
+    svg = re.sub(r"\{\{icon:([a-z]+):([0-9a-fA-F]{6}):(\d+)\}\}", icon, src.read_text())
+    # GitHub shows README SVGs as <img>, which can't load other files, so the avatar is embedded.
+    avatar = base64.b64encode((ART / "avatar-96.png").read_bytes()).decode()
+    out.write_text(svg.replace("{{avatar}}", f"data:image/png;base64,{avatar}"))
     print(f"{out.name:32} {out.stat().st_size // 1024} KB")
 
 

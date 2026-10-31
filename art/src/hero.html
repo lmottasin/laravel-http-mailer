@@ -5,6 +5,11 @@
 <link rel="stylesheet" href="src/base.css">
 <style>
   body { height: 640px; padding: 44px 64px 40px; display: flex; flex-direction: column; }
+  .head { position: relative; }
+  .author { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 12px; }
+  .author img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(27,27,31,.12); }
+  .author .n { font-size: 16px; font-weight: 700; }
+  .author .u { font: 500 13px "JetBrains Mono"; color: var(--muted); margin-top: 2px; }
   .head h1 { font-size: 40px; line-height: 1.12; font-weight: 700; letter-spacing: -.025em; }
   .head p { margin-top: 10px; font-size: 20px; color: var(--muted); }
   .head p b { color: var(--ink); font-weight: 600; }
@@ -22,6 +27,7 @@
   @media (max-width: 700px) {
     body { height: auto; padding: 32px 24px; }
     .head h1 { font-size: 28px; }
+    .author { position: static; margin-bottom: 18px; }
     .head p { font-size: 16px; }
     .desktop { display: none; }
     .mobile { display: block; }
@@ -33,6 +39,7 @@
 </head>
 <body>
   <div class="head">
+    <div class="author"><img src="avatar.png" alt=""><div><div class="n">Md. Mottasin Lemon</div><div class="u">@lmottasin</div></div></div>
     <h1>Cloud hosts block SMTP ports for security.</h1>
     <p>Send over <b>HTTPS port 443</b> instead. <b style="color:var(--green)">Your email code doesn't change.</b></p>
   </div>
