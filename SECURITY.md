@@ -10,7 +10,7 @@
 
 Please **do not** open a public issue for security problems.
 
-Report it privately through [GitHub Security Advisories](https://github.com/lmottasin/laravel-http-mailer/security/advisories/new), or email **mottasin@workslayr.com**.
+Report it privately through [GitHub Security Advisories](https://github.com/lmottasin/laravel-http-mailer/security/advisories/new), or email **lmottasin@gmail.com**.
 
 You can expect a reply within a few days. Once the issue is confirmed, a fix will be released as soon as possible and you will be credited (unless you'd rather not be).
 

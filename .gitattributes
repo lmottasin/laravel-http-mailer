@@ -7,3 +7,4 @@
 /.editorconfig      export-ignore
 /phpunit.xml        export-ignore
 /CONTRIBUTING.md    export-ignore
+/art export-ignore
