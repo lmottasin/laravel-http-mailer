@@ -1,6 +1,7 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero.png" alt="Laravel HTTP Mailer: send mail over HTTPS with SendGrid and Brevo when SMTP is blocked" width="100%">
-</p>
+<picture>
+  <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero-mobile.png">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/hero.png" alt="Your server blocks SMTP, so Laravel emails time out. The fix: send through the SendGrid or Brevo API over HTTPS. No code changes." width="100%">
+</picture>
 
 <p align="center">
   <a href="https://github.com/lmottasin/laravel-http-mailer/actions/workflows/tests.yml"><img src="https://github.com/lmottasin/laravel-http-mailer/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
@@ -11,17 +12,22 @@
 
 # Laravel HTTP Mailer
 
-**In short:** your server blocks SMTP, so Laravel can't send email. This package sends it through the **SendGrid** or **Brevo** HTTP API instead, over normal HTTPS. You install it, change one line in `.env`, and your existing emails start working again. You don't touch any PHP code.
+**The problem:** your server blocks SMTP, so Laravel emails time out.
+**The fix:** this package sends them through the **SendGrid** or **Brevo** HTTP API over HTTPS instead.
+
+> [!TIP]
+> **No code changes.** Your Mailables, Notifications and `Mail::to()->send()` calls keep working exactly as they do now. You install the package and change one line in `.env`. That's all.
 
 ## Why do I need this?
 
-Most cloud hosts (DigitalOcean, AWS, Google Cloud, Hetzner, and others) **block outgoing SMTP ports 25, 465 and 587** to fight spam. Laravel's default `smtp` mailer uses those ports, so in production your emails just time out, often with no clear error.
+Most cloud hosts (AWS, DigitalOcean, Google Cloud, Hetzner, and others) **block outgoing SMTP ports 25, 465 and 587** to fight spam. Laravel's default `smtp` mailer uses those ports, so in production your emails just time out, with no clear reason.
 
-SendGrid and Brevo both have an HTTP API on **port 443**, the same port every website uses, so it's never blocked. This package plugs those APIs into Laravel's mail system.
+SendGrid and Brevo both have an HTTP API on **port 443**, the same port every website uses, so it's never blocked. This package plugs those APIs into Laravel's mail system. As a bonus, when something is wrong you get a clear error (like `403: sender not verified`) instead of a silent timeout.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/how-it-works.png" alt="How it works: your Laravel code, this package's HTTP driver, then SendGrid or Brevo over HTTPS port 443, then the inbox" width="100%">
-</p>
+<picture>
+  <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/smtp-vs-api-mobile.png">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/smtp-vs-api.png" alt="SMTP vs HTTP API: SMTP ports are blocked on AWS, DigitalOcean, Google Cloud and Hetzner and fail with a timeout; the HTTP API uses port 443 and returns clear errors. Your Laravel code does not change." width="100%">
+</picture>
 
 ## Requirements
 
@@ -133,9 +139,9 @@ php artisan tinker --execute 'Mail::raw("It works!", fn ($m) => $m->to("you@exam
 > (SendGrid → *Sender Authentication*, Brevo → *Senders, Domains & Dedicated IPs*).
 > If it isn't, the API rejects the email with **HTTP 403**.
 
-## Usage
+## Usage (no code changes)
 
-Keep writing mail code exactly as you do today:
+Nothing to change. Keep writing mail code exactly as you do today:
 
 ```php
 Mail::to($user)->send(new WelcomeMail($user));
@@ -276,6 +282,14 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 
 ## How it compares
 
+<picture>
+  <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/compare-mobile.png">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/compare.png" alt="Comparison: this package supports SendGrid and Brevo through Mail:: with one .env line; Symfony bridges need Mail::extend glue; s-ichikawa driver is SendGrid only; the official SendGrid SDK needs a code rewrite." width="100%">
+</picture>
+
+<details>
+<summary>Same comparison as text</summary>
+
 | Package | Providers | Works with `Mail::` out of the box | Multiple providers |
 |---|---|---|---|
 | **lmottasin/laravel-http-mailer** | SendGrid, Brevo (easy to extend) | ✅ | ✅ |
@@ -283,7 +297,17 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 | `s-ichikawa/laravel-sendgrid-driver` | SendGrid | ✅ | ❌ |
 | `sendgrid/sendgrid` (official SDK) | SendGrid | ❌ Not a mail driver | ❌ |
 
+</details>
+
 ## Troubleshooting
+
+<picture>
+  <source media="(max-width: 700px)" srcset="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/troubleshooting-mobile.png">
+  <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/troubleshooting.png" alt="Troubleshooting: 403 means verify your sender domain; 401 means wrong API key; still on port 587 means MAIL_MAILER is still smtp; ignored .env means run config:clear; unsupported transport means dump-autoload and config:clear; queued mail missing means check failed_jobs and logs." width="100%">
+</picture>
+
+<details open>
+<summary>Copy-paste version</summary>
 
 | You see | What to do |
 |---|---|
@@ -293,6 +317,8 @@ Apps can then use `MAIL_MAILER=foo` and `FOO_API_KEY=...`. PRs for new providers
 | New `.env` values are ignored | Your config is cached. Run `php artisan config:clear` (or `config:cache` again in production). |
 | Queued emails never arrive | Check the `failed_jobs` table and `storage/logs`. Look for `TransportException`, which contains the provider's error message. |
 | Still connecting to port 587 | `MAIL_MAILER` is still `smtp`. Set it to `sendgrid` or `brevo`. |
+
+</details>
 
 ## Testing
 

@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="src/base.css">
+<style>
+  body { display: flex; gap: 52px; align-items: center; padding: 56px 64px; height: 640px; }
+
+  .left { width: 540px; flex: none; display: flex; flex-direction: column; }
+  .eyebrow { font: 500 14px "JetBrains Mono"; color: var(--muted); }
+  .problem { margin-top: 20px; font-size: 44px; line-height: 1.12; font-weight: 700; letter-spacing: -.025em; }
+  .hosts { margin-top: 18px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .hosts .logos { margin-top: 10px; display: flex; gap: 14px; align-items: center; }
+  .rule { height: 1px; background: var(--line); margin: 26px 0 22px; }
+  .fix-label { font: 600 13px "JetBrains Mono"; color: var(--green); letter-spacing: .06em; }
+  .fix { margin-top: 8px; font-size: 21px; line-height: 1.45; }
+  .fix b { font-weight: 600; }
+  .code { margin-top: 18px; overflow: hidden; }
+  .code .cap { font: 500 12px "JetBrains Mono"; color: var(--muted); padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .code .cap b { color: var(--green); font-weight: 600; }
+  .code pre { font-size: 15px; line-height: 1.6; font-weight: 500; padding: 12px 14px; white-space: pre-wrap; }
+  .k { color: #7c3aed; } .f { color: #1d4ed8; } .v { color: #b45309; }
+
+  .right { flex: 1; display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .lane { padding: 20px 22px; }
+  .lane-head { display: flex; justify-content: space-between; align-items: center; font: 600 13px "JetBrains Mono"; letter-spacing: .02em; }
+  .flow { display: flex; align-items: center; margin-top: 26px; }
+  .node { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 14px; font-weight: 600; white-space: nowrap; background: #fff; }
+  .node.ghost { color: var(--muted); border-style: dashed; font-weight: 500; }
+  .wire { flex: 1; min-width: 60px; height: 0; border-top: 2px solid var(--ink); position: relative; margin: 0 6px; }
+  .wire .lbl { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font: 500 12px "JetBrains Mono"; color: var(--muted); white-space: nowrap; }
+  .bad .wire { border-top: 2px dashed var(--red); }
+  .bad .wire::after { content: "✕"; position: absolute; left: 50%; top: -12px; transform: translateX(-50%); width: 22px; height: 22px; line-height: 19px; text-align: center; background: #fff; color: var(--red); border: 1.5px solid var(--red); border-radius: 50%; font-size: 12px; font-weight: 700; }
+  .ok .wire::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 8px solid var(--ink); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .providers { display: flex; flex-direction: column; gap: 6px; }
+  .lane .err { margin-top: 16px; }
+
+  @media (max-width: 700px) {
+    body { flex-direction: column; align-items: stretch; gap: 28px; padding: 32px 24px; height: auto; }
+    .left { width: auto; }
+    .problem { font-size: 32px; }
+    .fix { font-size: 18px; }
+    .code pre { font-size: 13px; }
+    .lane { padding: 16px; }
+    .node { font-size: 13px; padding: 7px 8px; }
+    .node.ghost { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="eyebrow">lmottasin/laravel-http-mailer</div>
+
+    <div class="problem">Your server blocks SMTP, so Laravel emails time out.</div>
+
+    <div class="hosts">
+      Ports 25 / 465 / 587 are blocked by default on
+      <div class="logos">
+        {{icon:amazonwebservices:232f3e:30}}
+        {{icon:digitalocean:0080ff:22}}
+        {{icon:googlecloud:4285f4:22}}
+        {{icon:hetzner:d50c2d:22}}
+        <span>and most clouds.</span>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="fix-label">THE FIX</div>
+    <p class="fix">Send through the <b>SendGrid</b> or <b>Brevo</b> API over HTTPS. Install, set <span class="mono" style="font-size:.86em">MAIL_MAILER</span>, done.</p>
+
+    <div class="card code">
+      <div class="cap"><span>your code</span><b>no changes</b></div>
+<pre><span class="k">Mail</span>::<span class="f">to</span>(<span class="v">$user</span>)-&gt;<span class="f">send</span>(<span class="k">new</span> <span class="k">WelcomeMail</span>);
+<span class="v">$user</span>-&gt;<span class="f">notify</span>(<span class="k">new</span> <span class="k">OrderShipped</span>(<span class="v">$order</span>));</pre>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="card lane bad">
+      <div class="lane-head"><span>MAIL_MAILER=smtp</span><span class="tag bad">BLOCKED</span></div>
+      <div class="flow">
+        <div class="node">{{icon:laravel:ff2d20:18}} Laravel</div>
+        <div class="wire"><span class="lbl">SMTP :587</span></div>
+        <div class="node ghost">smtp.sendgrid.net</div>
+      </div>
+      <span class="err bad">Connection could not be established with host "smtp.sendgrid.net:587": Connection timed out</span>
+    </div>
+
+    <div class="card lane ok">
+      <div class="lane-head"><span>MAIL_MAILER=sendgrid</span><span class="tag ok">DELIVERED</span></div>
+      <div class="flow">
+        <div class="node">{{icon:laravel:ff2d20:18}} Laravel</div>
+        <div class="wire"><span class="lbl">HTTPS :443</span></div>
+        <div class="providers">
+          <div class="node">{{icon:sendgrid:1a82e2:18}} SendGrid</div>
+          <div class="node">{{icon:brevo:0b996e:18}} Brevo</div>
+        </div>
+      </div>
+      <span class="err ok">202 Accepted · message ID returned. Errors come back as readable JSON.</span>
+    </div>
+  </div>
+</body>
+</html>

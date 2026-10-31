@@ -33,3 +33,13 @@ composer test
 Open an [issue](https://github.com/lmottasin/laravel-http-mailer/issues) with your PHP and Laravel versions, the provider, and the full error message.
 
 Security problems should **not** go in public issues. See [SECURITY.md](SECURITY.md).
+
+## README images
+
+The images in `art/` are built from HTML templates in `art/src/`. Each one is rendered for desktop and for mobile (`*-mobile.png`).
+Edit the template, then rebuild (needs Google Chrome and ImageMagick):
+
+```bash
+python3 art/build.py              # all images
+python3 art/build.py troubleshooting
+```

@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="src/base.css">
+<style>
+  .items { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .item { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .item h3 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .num { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font: 600 12px "JetBrains Mono"; flex: none; }
+  .lbl { font: 600 11px "JetBrains Mono"; letter-spacing: .06em; color: var(--muted); }
+  .lbl.fix { color: var(--green); }
+  .item p { font-size: 14px; line-height: 1.5; }
+  .item .mono { font-size: 12.5px; background: var(--soft); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }
+
+  @media (max-width: 700px) {
+    .items { grid-template-columns: 1fr; }
+    .item { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+  <h2>Troubleshooting</h2>
+  <p class="sub">The error you see, and what to do about it.</p>
+
+  <div class="items">
+    <div class="card item">
+      <h3><span class="num">1</span>HTTP 403 from the API</h3>
+      <span class="err bad">403: The from address does not match a verified Sender Identity.</span>
+      <div class="lbl fix">FIX</div>
+      <p>Verify the domain in <span class="mono">MAIL_FROM_ADDRESS</span> in your SendGrid or Brevo dashboard.</p>
+    </div>
+
+    <div class="card item">
+      <h3><span class="num">2</span>401 Unauthorized</h3>
+      <span class="err bad">401: The provided authorization grant is invalid, expired, or revoked</span>
+      <div class="lbl fix">FIX</div>
+      <p>Check the API key. For Brevo use the <span class="mono">xkeysib-</span> API key, not the <span class="mono">xsmtpsib-</span> SMTP password.</p>
+    </div>
+
+    <div class="card item">
+      <h3><span class="num">3</span>Still trying port 587</h3>
+      <span class="err bad">Connection could not be established with host "smtp.sendgrid.net:587"</span>
+      <div class="lbl fix">FIX</div>
+      <p>Your app still uses SMTP. Set <span class="mono">MAIL_MAILER=sendgrid</span> or <span class="mono">brevo</span>, then clear the config.</p>
+    </div>
+
+    <div class="card item">
+      <h3><span class="num">4</span>New .env values are ignored</h3>
+      <span class="err bad">Config is cached, so old mail settings are still used</span>
+      <div class="lbl fix">FIX</div>
+      <span class="cmd">php artisan config:clear</span>
+    </div>
+
+    <div class="card item">
+      <h3><span class="num">5</span>Unsupported mail transport</h3>
+      <span class="err bad">Unsupported mail transport [sendgrid].</span>
+      <div class="lbl fix">FIX</div>
+      <span class="cmd">composer dump-autoload &amp;&amp; php artisan config:clear</span>
+    </div>
+
+    <div class="card item">
+      <h3><span class="num">6</span>Queued mail never arrives</h3>
+      <span class="err bad">No error on screen, the job failed in the background</span>
+      <div class="lbl fix">FIX</div>
+      <p>Check the <span class="mono">failed_jobs</span> table and <span class="mono">storage/logs</span> for a <span class="mono">TransportException</span>. It has the provider's real error.</p>
+    </div>
+  </div>
+</body>
+</html>

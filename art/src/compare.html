@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="src/base.css">
+<style>
+  .grid { margin-top: 26px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 2fr 1fr .85fr .85fr 1.45fr; border-bottom: 1px solid var(--line); align-items: center; }
+  .row:last-child { border-bottom: 0; }
+  .row > div { padding: 16px 18px; font-size: 15px; line-height: 1.45; }
+  .row.head { align-items: stretch; background: var(--soft); }
+  .row.head > div { font: 600 12px "JetBrains Mono"; letter-spacing: .05em; color: var(--muted); background: var(--soft); text-transform: uppercase; }
+  .row.me { background: #f6fbf7; box-shadow: inset 3px 0 0 var(--green); }
+  .pkg { display: flex; align-items: center; gap: 12px; }
+  .pkg .name { font: 600 14px "JetBrains Mono"; }
+  .pkg .desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .ico { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; display: grid; place-items: center; background: #fff; flex: none; }
+  .yes, .no { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .yes { color: var(--green); } .no { color: var(--red); }
+  .yes::before, .no::before { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: #fff; }
+  .yes::before { content: "✓"; background: var(--green); }
+  .no::before { content: "✕"; background: var(--red); }
+  .provs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+  .work { font-size: 14px; color: var(--ink); }
+  .work .mono { font-size: 12.5px; background: var(--soft); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }
+  .m { display: none; }
+
+  @media (max-width: 700px) {
+    .row { grid-template-columns: 1fr; }
+    .row.head { display: none; }
+    .row > div { padding: 5px 16px; }
+    .row > div:first-child { padding-top: 16px; padding-bottom: 8px; }
+    .row > div:last-child { padding-bottom: 16px; }
+    .m { display: inline-block; width: 150px; font: 600 11px "JetBrains Mono"; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .line { display: flex; align-items: center; }
+  }
+</style>
+</head>
+<body>
+  <h2>How it compares</h2>
+  <p class="sub">Other packages either cover one provider or make you write the glue code yourself.</p>
+
+  <div class="card grid">
+    <div class="row head">
+      <div>Package</div><div>Providers</div><div>Works with Mail::</div><div>Many providers</div><div>What you have to do</div>
+    </div>
+
+    <div class="row me">
+      <div class="pkg"><div class="ico">{{icon:laravel:ff2d20:18}}</div><div><div class="name">lmottasin/laravel-http-mailer</div><div class="desc">this package</div></div></div>
+      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} {{icon:brevo:0b996e:16}} + easy to add</span></div>
+      <div class="line"><span class="m">Works with Mail::</span><span class="yes">Yes</span></div>
+      <div class="line"><span class="m">Many providers</span><span class="yes">Yes</span></div>
+      <div class="line"><span class="m">You do</span><span class="work">Install + one <span class="mono">.env</span> line</span></div>
+    </div>
+
+    <div class="row">
+      <div class="pkg"><div class="ico">{{icon:symfony:000000:18}}</div><div><div class="name">symfony/sendgrid-mailer<br>symfony/brevo-mailer</div><div class="desc">raw Symfony bridges</div></div></div>
+      <div class="line"><span class="m">Providers</span><span class="provs">One per package</span></div>
+      <div class="line"><span class="m">Works with Mail::</span><span class="no">No</span></div>
+      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
+      <div class="line"><span class="m">You do</span><span class="work">Write <span class="mono">Mail::extend()</span> glue for each</span></div>
+    </div>
+
+    <div class="row">
+      <div class="pkg"><div class="ico">{{icon:sendgrid:1a82e2:18}}</div><div><div class="name">s-ichikawa/laravel-sendgrid-driver</div><div class="desc">community driver</div></div></div>
+      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} SendGrid only</span></div>
+      <div class="line"><span class="m">Works with Mail::</span><span class="yes">Yes</span></div>
+      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
+      <div class="line"><span class="m">You do</span><span class="work">Add mailer + services config</span></div>
+    </div>
+
+    <div class="row">
+      <div class="pkg"><div class="ico">{{icon:sendgrid:1a82e2:18}}</div><div><div class="name">sendgrid/sendgrid</div><div class="desc">official PHP SDK</div></div></div>
+      <div class="line"><span class="m">Providers</span><span class="provs">{{icon:sendgrid:1a82e2:16}} SendGrid only</span></div>
+      <div class="line"><span class="m">Works with Mail::</span><span class="no">No</span></div>
+      <div class="line"><span class="m">Many providers</span><span class="no">No</span></div>
+      <div class="line"><span class="m">You do</span><span class="work">Rewrite mail code to SDK calls</span></div>
+    </div>
+  </div>
+</body>
+</html>
