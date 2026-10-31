@@ -142,5 +142,5 @@
   <text x="80" y="598" class="mono" font-size="15" fill="#16161a"><tspan fill="#6b6b70">$ </tspan>composer require lmottasin/laravel-http-mailer</text>
   <circle cx="944" cy="592" r="10" fill="#1f7a45"/>
   <path d="M939 592l3.5 3.5 6.5-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="962" y="598" font-size="16" font-weight="600" fill="#1f7a45">No changes to your email code</text>
+  <text x="962" y="598" font-size="16" font-weight="600" fill="#1f7a45">Mailables &amp; Notifications: no changes</text>
 </svg>

@@ -44,7 +44,7 @@ Everything you already send keeps working. Only `.env` changes.
 <details>
 <summary>Same comparison as text</summary>
 
-| Package | Works with `Mail::` | SendGrid + Brevo | No glue code |
+| Package | Mailables & Notifications | SendGrid + Brevo | No glue code |
 |---|:-:|:-:|:-:|
 | **lmottasin/laravel-http-mailer** | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/check.svg" width="16" height="16" alt="Yes"> |
 | `symfony/*-mailer` bridges | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> | <img src="https://raw.githubusercontent.com/lmottasin/laravel-http-mailer/main/art/ui/cross.svg" width="16" height="16" alt="No"> |
