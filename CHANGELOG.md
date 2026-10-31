@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Security
+- SendGrid `region` only accepts `global` or `eu`. Before, any value went into the API hostname, so a bad `SENDGRID_REGION` could send mail and the API key to another host.
+- HTTP requests no longer follow redirects, so the API key header can't be forwarded to another host.
+- API key config parameters are marked `#[\SensitiveParameter]`, keeping the key out of stack-trace arguments.
+- GitHub Actions are pinned to commit SHAs.
+
+### Fixed
+- Default HTTP timeouts (10 s idle, 30 s total), so a slow API can't hang a request that sends mail.
+- A key with surrounding whitespace (e.g. a trailing newline) is trimmed instead of failing at send time.
+- Mailer `client` options are applied even when an HTTP client is bound in the container.
+- A non-array `client` option throws a clear error instead of being ignored.
+- Under Octane, transports use the mail manager's current app, so per-request config (such as per-tenant keys) is respected.
+- Custom drivers can no longer take over Laravel's built-in transports (`smtp`, `log`, ...), reuse another driver's name, or use an empty or dotted name.
+
 ## [2.0.0] - 2026-10-31
 
 ### Added

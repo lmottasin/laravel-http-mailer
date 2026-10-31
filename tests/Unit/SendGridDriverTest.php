@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lmottasin\HttpMailer\Tests\Unit;
 
 use Illuminate\Config\Repository;
+use InvalidArgumentException;
 use Lmottasin\HttpMailer\Drivers\SendGridDriver;
 use Lmottasin\HttpMailer\Exceptions\MissingApiKeyException;
 use PHPUnit\Framework\TestCase;
@@ -57,6 +58,36 @@ final class SendGridDriverTest extends TestCase
         $this->send($this->driver(['region' => 'eu'])->transport(['key' => 'SG.key']));
 
         $this->assertSame('https://api.eu.sendgrid.com/v3/mail/send', $this->url);
+    }
+
+    public function test_normalizes_the_region(): void
+    {
+        $this->send($this->driver()->transport(['key' => 'SG.key', 'region' => ' EU ']));
+
+        $this->assertSame('https://api.eu.sendgrid.com/v3/mail/send', $this->url);
+    }
+
+    public function test_an_empty_mailer_region_uses_the_global_endpoint_without_falling_back(): void
+    {
+        $this->send($this->driver(['region' => 'eu'])->transport(['key' => 'SG.key', 'region' => '']));
+
+        $this->assertSame('https://api.sendgrid.com/v3/mail/send', $this->url);
+    }
+
+    public function test_rejects_a_region_that_could_change_the_api_host(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported SendGrid region');
+
+        $this->driver()->transport(['key' => 'SG.key', 'region' => 'x@evil.example#']);
+    }
+
+    public function test_rejects_a_non_string_region(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported SendGrid region [array]');
+
+        $this->driver()->transport(['key' => 'SG.key', 'region' => ['eu']]);
     }
 
     public function test_falls_back_to_the_services_key_when_the_mailer_has_none(): void

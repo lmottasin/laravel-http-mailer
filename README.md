@@ -223,13 +223,17 @@ Then set `MAIL_MAILER=api` in `.env`, along with both API keys.
     'sendgrid' => [
         'transport' => 'sendgrid',
         'key' => env('MY_OTHER_SENDGRID_KEY'), // if this is missing you get a clear error, never another account's key
-        'region' => 'eu',                      // SendGrid EU data residency
-        'client' => ['timeout' => 10],         // options for the Symfony HTTP client
+        'region' => 'eu',                      // SendGrid EU data residency ("global" or "eu")
+        'client' => ['timeout' => 5],          // Symfony HTTP client options
     ],
 ],
 ```
 
 **A missing or empty key** throws `MissingApiKeyException` with the name of the `.env` variable to set, instead of failing later with an HTTP 401.
+
+**Safe HTTP defaults.** Every request has a 10 s timeout, a 30 s maximum duration and does not follow redirects, so a slow API can't hang your app and the API key is never sent to another host. Change them with the mailer's `client` option.
+
+**Region** only accepts `global` or `eu`. Anything else throws, because the value becomes part of the API hostname.
 
 ## Supported providers
 
@@ -279,7 +283,7 @@ final class FooTransportFactory implements TransportFactory
 ],
 ```
 
-That's it: `MAIL_MAILER=foo` now works. Want it built in for everyone? See [CONTRIBUTING.md](CONTRIBUTING.md).
+That's it: `MAIL_MAILER=foo` now works. Names must be unique, can't contain a dot, and can't reuse a Laravel transport name such as `smtp` or `log`. Want it built in for everyone? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## How it works under the hood
 

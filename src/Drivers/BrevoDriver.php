@@ -18,7 +18,7 @@ final class BrevoDriver extends ApiDriver
     /**
      * @param  array<array-key, mixed>  $config
      */
-    public function transport(array $config): TransportInterface
+    public function transport(#[\SensitiveParameter] array $config): TransportInterface
     {
         return (new BrevoTransportFactory(client: $this->httpClient($config)))->create(new Dsn(
             scheme: 'brevo+api',
