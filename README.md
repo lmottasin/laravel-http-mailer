@@ -314,6 +314,26 @@ That's it: `MAIL_MAILER=foo` now works. Names must be unique, can't contain a do
 
 </details>
 
+## FAQ
+
+**Why do Laravel emails time out on DigitalOcean, AWS, Google Cloud or Hetzner?**
+These hosts block outgoing SMTP ports (25, 465, 587) to stop spam. Laravel's default `smtp` mailer uses those ports, so the connection times out.
+
+**How do I send Laravel email when port 587 is blocked?**
+Install this package and set `MAIL_MAILER=sendgrid` (or `brevo`). Mail goes out over the provider's HTTPS API on port 443, which is never blocked.
+
+**Do I need to change my Mailables or Notifications?**
+No. `Mail::to()->send()`, queued mail and mail Notifications keep working. Only `.env` changes.
+
+**Can I just ask my host to unblock SMTP?**
+Sometimes, but it takes a support ticket and is often refused. An HTTP API works right away.
+
+**SendGrid or Brevo?**
+Either. Set both keys and use Laravel's `failover` mailer to switch automatically if one is down.
+
+**Does it work with Laravel 11, 12 and 13, Octane and queues?**
+Yes. Laravel 12 and 13 are fully supported, 11 is best-effort (end-of-life). Octane, queue workers and `config:cache` are covered by the tests.
+
 ## Related links
 
 **Why your host blocks SMTP**
